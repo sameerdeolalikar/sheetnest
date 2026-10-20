@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SheetNest · Make room for every piece</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span class="logo" aria-hidden="true">▦</span>SheetNest
+      </div>
+      <span class="pill">LOCAL MATERIAL PLANNER</span>
+    </header>
+    <main>
+      <div class="intro">
+        <div>
+          <p class="kicker">From cut list to clear layout</p>
+          <h1>Make room for every piece.</h1>
+          <p class="sub">
+            Arrange rectangular parts, account for cut spacing, and inspect a
+            measured layout before you use your material.
+          </p>
+        </div>
+        <div class="row">
+          <button id="sample">New sample</button
+          ><button id="save" class="primary">Save project</button>
+        </div>
+      </div>
+      <div id="error" class="notice error" role="alert" hidden></div>
+      <div id="status" class="notice" role="status" hidden></div>
+      <div class="app">
+        <aside>
+          <section class="card stack">
+            <h2>Project & stock</h2>
+            <label>Project name<input id="title" maxlength="100" /></label>
+            <div class="grid2">
+              <label
+                >Width · mm<input
+                  id="stock-width"
+                  type="number"
+                  min="1"
+                  max="10000" /></label
+              ><label
+                >Height · mm<input
+                  id="stock-height"
+                  type="number"
+                  min="1"
+                  max="10000"
+              /></label>
+            </div>
+            <div class="grid2">
+              <label
+                >Available sheets<input
+                  id="stock-count"
+                  type="number"
+                  min="1"
+                  max="20" /></label
+              ><label
+                >Cut spacing · mm<input
+                  id="kerf"
+                  type="number"
+                  min="0"
+                  max="20"
+              /></label>
+            </div>
+            <button id="plan" class="primary">Generate layout</button
+            ><span id="revision" class="muted">Unsaved project</span>
+            <p class="note">
+              Integer millimetres. Rotation is optional per part. Layouts use a
+              shelf heuristic, not an optimal nesting solver.
+            </p>
+          </section>
+          <section class="card stack">
+            <h2>Local library</h2>
+            <label
+              >Saved projects<select id="library">
+                <option value="">No saved projects</option>
+              </select></label
+            ><button id="open">Open project</button>
+            <hr />
+            <label
+              >Import project JSON<input id="import" type="file" accept=".json"
+            /></label>
+            <p class="muted">
+              Projects are stored in a local SQLite database. Export JSON for a
+              portable copy.
+            </p>
+          </section>
+        </aside>
+        <div>
+          <div class="metrics">
+            <div class="metric">
+              <strong id="placed">0</strong><span>Pieces placed</span>
+            </div>
+            <div class="metric">
+              <strong id="sheets">0</strong><span>Sheets used</span>
+            </div>
+            <div class="metric">
+              <strong id="utilization">0%</strong><span>Area utilization</span>
+            </div>
+            <div class="metric">
+              <strong id="unplaced-count">0</strong><span>Pieces unplaced</span>
+            </div>
+          </div>
+          <section class="card">
+            <div class="heading">
+              <h2>01 / Your cut list</h2>
+              <button id="add-part">+ Add part</button>
+            </div>
+            <div
+              class="scroll"
+              tabindex="0"
+              role="region"
+              aria-label="Editable cut list"
+            >
+              <table class="editor-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Width mm</th>
+                    <th>Height mm</th>
+                    <th>Qty</th>
+                    <th>Rotate</th>
+                    <th>Remove</th>
+                  </tr>
+                </thead>
+                <tbody id="parts"></tbody>
+              </table>
+            </div>
+          </section>
+          <section class="card">
+            <div class="heading">
+              <h2>02 / Inspect the layout</h2>
+              <div class="row">
+                <button id="undo" disabled>Undo move</button
+                ><button id="redo" disabled>Redo</button>
+              </div>
+            </div>
+            <div
+              id="sheet-tabs"
+              class="tabs"
+              aria-label="Sheet selection"
+            ></div>
+            <div
+              id="drawing"
+              class="canvas"
+              role="region"
+              aria-label="Material layout"
+            >
+              <p class="empty">Generate a layout to see your parts.</p>
+            </div>
+            <p id="unplaced" class="muted"></p>
+            <div id="piece-editor" hidden>
+              <hr />
+              <h3 id="piece-name">Selected piece</h3>
+              <div class="row">
+                <label>X · mm<input id="x" type="number" min="0" /></label
+                ><label>Y · mm<input id="y" type="number" min="0" /></label
+                ><label>Sheet<select id="piece-sheet"></select></label
+                ><button id="move">Apply position</button
+                ><button id="rotate-piece">Rotate 90°</button>
+              </div>
+              <p class="muted">
+                Select a piece in the drawing or use Tab and Enter. Each move is
+                checked for bounds, collisions, and cut spacing.
+              </p>
+            </div>
+          </section>
+          <section class="card">
+            <div class="heading">
+              <h2>03 / Take the plan with you</h2>
+              <span class="tag">Validated before export</span>
+            </div>
+            <div class="row">
+              <button id="export-json">Export project JSON</button
+              ><button id="export-svg">Export current sheet SVG</button
+              ><button id="print">Print plan</button>
+            </div>
+            <p class="note">
+              Planning aid only. Unused area includes cut spacing and is not a
+              guaranteed reusable offcut. Confirm measurements and a workable
+              cut sequence independently; this app does not generate machine
+              instructions.
+            </p>
+          </section>
+        </div>
+      </div>
+      <footer>
+        SheetNest · Python + SQLite · No cloud account, telemetry, or external
+        uploads.
+      </footer>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,156 @@
+{
+  "document": {
+    "version": 1,
+    "title": "Workshop organizer",
+    "stock": {
+      "width": 1200,
+      "height": 800,
+      "count": 2
+    },
+    "kerf": 4,
+    "parts": [
+      {
+        "id": "shelf",
+        "name": "Shelf panel",
+        "width": 520,
+        "height": 280,
+        "quantity": 3,
+        "rotate": true
+      },
+      {
+        "id": "side",
+        "name": "Side panel",
+        "width": 380,
+        "height": 220,
+        "quantity": 4,
+        "rotate": true
+      },
+      {
+        "id": "divider",
+        "name": "Divider",
+        "width": 240,
+        "height": 160,
+        "quantity": 4,
+        "rotate": false
+      }
+    ]
+  },
+  "layout": {
+    "placements": [
+      {
+        "id": "shelf:1",
+        "name": "Shelf panel",
+        "sheet": 0,
+        "x": 0,
+        "y": 0,
+        "width": 520,
+        "height": 280,
+        "rotated": false
+      },
+      {
+        "id": "shelf:2",
+        "name": "Shelf panel",
+        "sheet": 0,
+        "x": 524,
+        "y": 0,
+        "width": 520,
+        "height": 280,
+        "rotated": false
+      },
+      {
+        "id": "shelf:3",
+        "name": "Shelf panel",
+        "sheet": 0,
+        "x": 0,
+        "y": 284,
+        "width": 520,
+        "height": 280,
+        "rotated": false
+      },
+      {
+        "id": "side:1",
+        "name": "Side panel",
+        "sheet": 0,
+        "x": 524,
+        "y": 284,
+        "width": 380,
+        "height": 220,
+        "rotated": false
+      },
+      {
+        "id": "side:2",
+        "name": "Side panel",
+        "sheet": 0,
+        "x": 0,
+        "y": 568,
+        "width": 380,
+        "height": 220,
+        "rotated": false
+      },
+      {
+        "id": "side:3",
+        "name": "Side panel",
+        "sheet": 0,
+        "x": 384,
+        "y": 568,
+        "width": 380,
+        "height": 220,
+        "rotated": false
+      },
+      {
+        "id": "side:4",
+        "name": "Side panel",
+        "sheet": 0,
+        "x": 768,
+        "y": 568,
+        "width": 380,
+        "height": 220,
+        "rotated": false
+      },
+      {
+        "id": "divider:1",
+        "name": "Divider",
+        "sheet": 0,
+        "x": 908,
+        "y": 284,
+        "width": 240,
+        "height": 160,
+        "rotated": false
+      },
+      {
+        "id": "divider:2",
+        "name": "Divider",
+        "sheet": 1,
+        "x": 0,
+        "y": 0,
+        "width": 240,
+        "height": 160,
+        "rotated": false
+      },
+      {
+        "id": "divider:3",
+        "name": "Divider",
+        "sheet": 1,
+        "x": 244,
+        "y": 0,
+        "width": 240,
+        "height": 160,
+        "rotated": false
+      },
+      {
+        "id": "divider:4",
+        "name": "Divider",
+        "sheet": 1,
+        "x": 488,
+        "y": 0,
+        "width": 240,
+        "height": 160,
+        "rotated": false
+      }
+    ],
+    "unplaced": [],
+    "sheets_used": 2,
+    "utilization": 48.17,
+    "unused_area": 995200
+  }
+}
