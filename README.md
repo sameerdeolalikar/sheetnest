@@ -45,6 +45,8 @@ This is a planning aid, not a CNC exporter, optimal nesting solver or cut-sequen
 
 Local state, build output and browser downloads are excluded from Git. Back up your data file before experimenting with it. No telemetry or remote synchronization is implemented.
 
+Save requests create a project when `id` is omitted or `null` and `revision` is zero. Updating a project requires its non-empty string ID and current revision. Malformed IDs are rejected without changing the library.
+
 ## Next steps
 
 See [ROADMAP.md](ROADMAP.md) for concrete work with acceptance criteria and rough estimates, and [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

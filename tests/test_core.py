@@ -78,6 +78,27 @@ class CoreTests(unittest.TestCase):
             with self.assertRaises(ValueError): store.save(bad)
             self.assertEqual(store.get(saved['id']), saved)
 
+    def test_malformed_project_ids_leave_library_unchanged(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Store(Path(directory)/'data.sqlite3')
+            value = pack(sample())
+            saved = store.save(value)
+            before = store.list()
+            for key in [False, True, 0, 1, 1.5, '', '   ', [], ['project'], {}, {'id': saved['id']}]:
+                with self.subTest(key=key):
+                    with self.assertRaisesRegex(ValueError, 'Project ID'):
+                        store.save({'id': key, 'revision': 0, **value})
+                    self.assertEqual(store.list(), before)
+                    self.assertEqual(store.get(saved['id']), saved)
+
+    def test_null_project_id_creates_new_project(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Store(Path(directory)/'data.sqlite3')
+            value = pack(sample())
+            saved = store.save({'id': None, 'revision': 0, **value})
+            self.assertEqual(saved['revision'], 1)
+            self.assertEqual(store.get(saved['id']), {'id': saved['id'], 'revision': 1, **value})
+
 
 if __name__ == '__main__':
     unittest.main()

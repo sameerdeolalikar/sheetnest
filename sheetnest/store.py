@@ -31,6 +31,8 @@ class Store:
         doc = document(raw.get('document'))
         layout = validate(doc, raw.get('layout'))
         key = raw.get('id')
+        if key is not None and (not isinstance(key, str) or not key.strip()):
+            raise ValueError('Project ID must be a non-empty string or null.')
         revision = raw.get('revision', 0)
         if type(revision) is not int or revision < 0:
             raise ValueError('Invalid revision.')
