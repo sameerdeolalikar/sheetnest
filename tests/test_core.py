@@ -56,6 +56,31 @@ class CoreTests(unittest.TestCase):
             doc = sample(); doc['stock']['width'] = value
             with self.assertRaises(ValueError): document(doc)
 
+    def test_project_version_requires_integer_one(self):
+        self.assertEqual(document(sample())['version'], 1)
+        for value in [True, False, 1.0, '1', None, 0, 2, [], {}]:
+            with self.subTest(version=value):
+                doc = sample(); doc['version'] = value
+                with self.assertRaisesRegex(ValueError, 'version 1'):
+                    pack(doc)
+        doc = sample(); del doc['version']
+        with self.assertRaisesRegex(ValueError, 'version 1'):
+            document(doc)
+
+    def test_invalid_version_save_preserves_previous_data(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Store(Path(directory)/'data.sqlite3')
+            saved = store.save(pack(sample()))
+            before = store.list()
+            for version in [True, 1.0]:
+                with self.subTest(version=version):
+                    bad = copy.deepcopy(saved)
+                    bad['document']['version'] = version
+                    with self.assertRaisesRegex(ValueError, 'version 1'):
+                        store.save(bad)
+                    self.assertEqual(store.get(saved['id']), saved)
+                    self.assertEqual(store.list(), before)
+
     def test_deterministic_generated_layouts_validate(self):
         rng = random.Random(42)
         for _ in range(100):

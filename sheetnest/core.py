@@ -20,7 +20,7 @@ def text(value, name):
 
 
 def document(raw):
-    if not isinstance(raw, dict) or raw.get('version') != 1:
+    if not isinstance(raw, dict) or type(raw.get('version')) is not int or raw['version'] != 1:
         raise ValueError('Expected a version 1 project.')
     stock = raw.get('stock')
     if not isinstance(stock, dict):

@@ -47,6 +47,8 @@ Local state, build output and browser downloads are excluded from Git. Back up y
 
 Save requests create a project when `id` is omitted or `null` and `revision` is zero. Updating a project requires its non-empty string ID and current revision. Malformed IDs are rejected without changing the library.
 
+Project JSON requires `version` to be the integer `1`. Boolean, decimal and string versions are rejected when planning, validating or saving a project.
+
 ## Next steps
 
 See [ROADMAP.md](ROADMAP.md) for concrete work with acceptance criteria and rough estimates, and [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.
