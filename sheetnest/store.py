@@ -34,7 +34,7 @@ class Store:
         if key is not None and (not isinstance(key, str) or not key.strip()):
             raise ValueError('Project ID must be a non-empty string or null.')
         revision = raw.get('revision', 0)
-        if type(revision) is not int or revision < 0:
+        if type(revision) is not int or not 0 <= revision <= 2**63 - 1:
             raise ValueError('Invalid revision.')
         data = json.dumps({'document': doc, 'layout': layout})
         with sqlite3.connect(self.path) as db:

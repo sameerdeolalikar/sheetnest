@@ -103,6 +103,22 @@ class CoreTests(unittest.TestCase):
             with self.assertRaises(ValueError): store.save(bad)
             self.assertEqual(store.get(saved['id']), saved)
 
+    def test_out_of_range_revisions_leave_library_unchanged(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Store(Path(directory)/'data.sqlite3')
+            saved = store.save(pack(sample()))
+            before = store.list()
+            for revision in [-1, 2**63, 10**100]:
+                with self.subTest(revision=revision):
+                    with self.assertRaisesRegex(ValueError, 'Invalid revision'):
+                        store.save({**saved, 'revision': revision})
+                    self.assertEqual(store.get(saved['id']), saved)
+                    self.assertEqual(store.list(), before)
+            with self.assertRaises(Conflict):
+                store.save({**saved, 'revision': 2**63 - 1})
+            updated = store.save(saved)
+            self.assertEqual(updated['revision'], 2)
+
     def test_malformed_project_ids_leave_library_unchanged(self):
         with tempfile.TemporaryDirectory() as directory:
             store = Store(Path(directory)/'data.sqlite3')
