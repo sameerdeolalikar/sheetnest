@@ -391,6 +391,8 @@ $("undo").addEventListener("click", () => {
   redo.push(clone(layout));
   layout = undo.pop();
   dirty = true;
+  $("revision").textContent = "Unsaved layout changes";
+  message("Layout change undone. Save to keep this layout.");
   renderLayout();
   controls();
 });
@@ -399,6 +401,8 @@ $("redo").addEventListener("click", () => {
   undo.push(clone(layout));
   layout = redo.pop();
   dirty = true;
+  $("revision").textContent = "Unsaved layout changes";
+  message("Layout change redone. Save to keep this layout.");
   renderLayout();
   controls();
 });

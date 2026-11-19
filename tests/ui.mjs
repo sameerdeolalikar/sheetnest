@@ -47,11 +47,33 @@ try {
   await page.waitForFunction(() => !document.getElementById("save").disabled);
   const key = await page.inputValue("#library");
   assert(key);
+  await page.click("#undo");
+  await text("revision", "Unsaved layout changes");
+  await text("status", "Layout change undone. Save to keep this layout.");
+  if (process.env.UI_SCREENSHOTS) {
+    await mkdir(process.env.UI_SCREENSHOTS, { recursive: true });
+    await page.screenshot({
+      path: process.env.UI_SCREENSHOTS + "/unsaved-undo.png",
+      fullPage: true,
+    });
+  }
+  const undone = JSON.parse(await download("#export-json"));
+  assert.equal(undone.layout.placements.filter((p) => p.sheet === 2).length, 0);
+  await page.click("#save");
+  await text("revision", "Saved revision 2");
+  await page.click("#redo");
+  await text("revision", "Unsaved layout changes");
+  await text("status", "Layout change redone. Save to keep this layout.");
+  const redone = JSON.parse(await download("#export-json"));
+  assert.deepEqual(redone.layout, exported.layout);
+  await page.click("#save");
+  await text("revision", "Saved revision 3");
+  await page.waitForFunction(() => !document.getElementById("save").disabled);
   await page.reload();
   await text("placed", "11");
   await page.selectOption("#library", key);
   await page.click("#open");
-  await text("revision", "Saved revision 1");
+  await text("revision", "Saved revision 3");
   assert.equal(
     JSON.parse(await download("#export-json")).layout.placements.filter(
       (p) => p.sheet === 2,
