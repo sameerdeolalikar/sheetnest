@@ -47,7 +47,7 @@ Local state, build output and browser downloads are excluded from Git. Back up y
 
 Save requests create a project when `id` is omitted or `null` and `revision` is zero. Updating a project requires its non-empty string ID and current revision. Malformed IDs are rejected without changing the library.
 
-Save revisions must be integers from zero through `2^63 - 1` (SQLite's signed integer limit). Out-of-range revisions are rejected without changing saved projects.
+Save revisions must be integers from zero through `2^63 - 1` (SQLite's signed integer limit). Out-of-range revisions are rejected without changing saved projects. A project at the maximum revision can still be opened and exported, but further saves are rejected without changing it. Export and import its JSON to save it as a new project.
 
 Project JSON requires `version` to be the integer `1`. Boolean, decimal and string versions are rejected when planning, validating or saving a project.
 

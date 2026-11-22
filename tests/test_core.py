@@ -1,6 +1,7 @@
 import copy
 from pathlib import Path
 import random
+import sqlite3
 import tempfile
 import unittest
 from sheetnest.core import pack, validate, document
@@ -118,6 +119,26 @@ class CoreTests(unittest.TestCase):
                 store.save({**saved, 'revision': 2**63 - 1})
             updated = store.save(saved)
             self.assertEqual(updated['revision'], 2)
+
+    def test_revision_limit_save_preserves_previous_data(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Store(Path(directory)/'data.sqlite3')
+            saved = store.save(pack(sample()))
+            with sqlite3.connect(store.path) as db:
+                db.execute('UPDATE projects SET revision=? WHERE id=?', (2**63 - 2, saved['id']))
+            previous = store.get(saved['id'])
+            saved = store.save(previous)
+            self.assertEqual(saved['revision'], 2**63 - 1)
+            self.assertIs(type(saved['revision']), int)
+            before = store.list()
+            changed = copy.deepcopy(saved)
+            changed['document']['title'] = 'Changed panels'
+            with self.assertRaisesRegex(ValueError, 'revision limit'):
+                store.save(changed)
+            with self.assertRaises(Conflict):
+                store.save(previous)
+            self.assertEqual(Store(store.path).get(saved['id']), saved)
+            self.assertEqual(store.list(), before)
 
     def test_malformed_project_ids_leave_library_unchanged(self):
         with tempfile.TemporaryDirectory() as directory:

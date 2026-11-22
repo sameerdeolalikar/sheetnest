@@ -40,6 +40,9 @@ class Store:
         with sqlite3.connect(self.path) as db:
             db.execute('BEGIN IMMEDIATE')
             if key:
+                if revision == 2**63 - 1 and db.execute(
+                        'SELECT 1 FROM projects WHERE id=? AND revision=?', (key, revision)).fetchone():
+                    raise ValueError('This project reached the revision limit. Save it as a new project.')
                 count = db.execute("UPDATE projects SET title=?,revision=revision+1,data=?,updated=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=? AND revision=?",
                                    (doc['title'], data, key, revision)).rowcount
                 if count != 1:
