@@ -111,6 +111,32 @@ try {
       ).status,
   );
   assert.equal(blocked, 403, "Mutations require the workspace header");
+  await page.click("#plan");
+  await text("revision", "Unsaved generated layout");
+  const regenerated = JSON.parse(await download("#export-json"));
+  assert.equal(regenerated.layout.placements.filter((p) => p.sheet === 2).length, 0);
+  let discardPrompt = "";
+  page.once("dialog", (dialog) => { discardPrompt = dialog.message(); });
+  await page.click("#open");
+  await text("revision", "Saved revision 3");
+  assert.match(discardPrompt, /Discard unsaved changes/);
+  await page.click("#plan");
+  await text("revision", "Unsaved generated layout");
+  if (process.env.UI_SCREENSHOTS) {
+    await page.screenshot({
+      path: process.env.UI_SCREENSHOTS + "/unsaved-generated.png",
+      fullPage: true,
+    });
+  }
+  await page.click("#save");
+  await text("revision", "Saved revision 4");
+  await page.waitForFunction(() => !document.getElementById("save").disabled);
+  await page.reload();
+  await text("placed", "11");
+  await page.selectOption("#library", key);
+  await page.click("#open");
+  await text("revision", "Saved revision 4");
+  assert.deepEqual(JSON.parse(await download("#export-json")).layout, regenerated.layout);
   await page.setInputFiles("#import", "examples/sample.json");
   await page.waitForFunction(() =>
     document.getElementById("revision").textContent.includes("Imported"),

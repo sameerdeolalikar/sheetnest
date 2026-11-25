@@ -316,6 +316,8 @@ async function generate() {
   const result = await api("plan", doc);
   doc = result.document;
   layout = result.layout;
+  dirty = true;
+  $("revision").textContent = "Unsaved generated layout";
   undo = [];
   redo = [];
   selected = null;

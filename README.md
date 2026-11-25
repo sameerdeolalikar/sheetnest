@@ -43,6 +43,8 @@ Dimensions are integer millimetres. Limits are 200 pieces, 20 sheets and 100 sav
 
 This is a planning aid, not a CNC exporter, optimal nesting solver or cut-sequence/safety validator. Verify dimensions and cutting order independently before fabrication. Changing a cut-list input requires regenerating the layout. Undo covers manual layout changes, not every cut-list edit.
 
+Generating a layout replaces manual adjustments and marks the project as unsaved. Save the generated layout to keep it in the local library.
+
 Local state, build output and browser downloads are excluded from Git. Back up your data file before experimenting with it. No telemetry or remote synchronization is implemented.
 
 Save requests create a project when `id` is omitted or `null` and `revision` is zero. Updating a project requires its non-empty string ID and current revision. Malformed IDs are rejected without changing the library.
