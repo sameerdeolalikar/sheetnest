@@ -53,6 +53,8 @@ Save revisions must be integers from zero through `2^63 - 1` (SQLite's signed in
 
 Project JSON requires `version` to be the integer `1`. Boolean, decimal and string versions are rejected when planning, validating or saving a project.
 
+Project and part names support Unicode text, including emoji. Names containing unpaired Unicode surrogates in project JSON are rejected during validation, before planning or saving.
+
 ## Next steps
 
 See [ROADMAP.md](ROADMAP.md) for concrete work with acceptance criteria and rough estimates, and [CONTRIBUTING.md](CONTRIBUTING.md) for development conventions.

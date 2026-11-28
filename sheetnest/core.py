@@ -16,6 +16,10 @@ def integer(value, name, low=1, high=10000):
 def text(value, name):
     if not isinstance(value, str) or not 1 <= len(value.strip()) <= 100:
         raise ValueError(f"{name} must contain 1–100 characters.")
+    try:
+        value.encode('utf-8')
+    except UnicodeEncodeError:
+        raise ValueError(f"{name} must contain valid Unicode text.") from None
     return value.strip()
 
 

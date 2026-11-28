@@ -88,6 +88,36 @@ class CoreTests(unittest.TestCase):
             doc = sample(); doc['parts'] = [{'id': f'p{i}', 'name': f'Part {i}', 'width': rng.randint(5, 120), 'height': rng.randint(5, 90), 'quantity': rng.randint(1, 4), 'rotate': bool(i%2)} for i in range(8)]
             first = pack(doc); self.assertEqual(first, pack(doc)); validate(doc, first['layout'])
 
+    def test_unpaired_surrogates_rejected_in_labels(self):
+        for field in ['title', 'name', 'id']:
+            for value in ['\ud800', 'Panel\udfff']:
+                with self.subTest(field=field, value=repr(value)):
+                    doc = sample()
+                    target = doc if field == 'title' else doc['parts'][0]
+                    target[field] = value
+                    with self.assertRaisesRegex(ValueError, 'valid Unicode'):
+                        pack(doc)
+
+    def test_unicode_labels_roundtrip_and_failed_save_preserves_data(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Store(Path(directory)/'data.sqlite3')
+            doc = sample()
+            doc['title'] = 'Mått — 棚 🪵'
+            doc['parts'][0]['name'] = 'Hylla — 板 🪵'
+            saved = store.save(pack(doc))
+            self.assertEqual(Store(store.path).get(saved['id']), saved)
+            self.assertEqual(saved['document'], doc)
+            before = store.list()
+            for field in ['title', 'name']:
+                with self.subTest(field=field):
+                    bad = copy.deepcopy(saved)
+                    target = bad['document'] if field == 'title' else bad['document']['parts'][0]
+                    target[field] = '\ud800'
+                    with self.assertRaisesRegex(ValueError, 'valid Unicode'):
+                        store.save(bad)
+                    self.assertEqual(store.get(saved['id']), saved)
+                    self.assertEqual(store.list(), before)
+
     def test_storage_roundtrip_and_stale_revision(self):
         with tempfile.TemporaryDirectory() as directory:
             store = Store(Path(directory)/'data.sqlite3'); value = pack(sample())
